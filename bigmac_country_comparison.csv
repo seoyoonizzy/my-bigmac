@@ -1,0 +1,9 @@
+﻿country,country_kr,bigmac_price_usd,gdp_per_capita_usd,bigmac_affordability_index,signature_menu,gdp_year,source
+Switzerland,스위스,7.02,104449.8,14878.9,스위스 프리미엄 버거,2023,"Big Mac Index (Economist, approx.), World Bank GDP data"
+United States,미국,5.69,82586.8,14514.4,"빅맥, 쿼터파운더",2023,"Big Mac Index (Economist, approx.), World Bank GDP data"
+Japan,일본,3.17,35215.0,11108.8,"데리야키버거, 새우필레오",2023,"Big Mac Index (Economist, approx.), World Bank GDP data"
+South Korea,한국,3.79,35674.1,9412.7,"불고기버거, 1988버거",2023,"Big Mac Index (Economist, approx.), World Bank GDP data"
+France,프랑스,5.98,44700.1,7474.9,"르 빅맥, 마카롱 맥카페",2023,"Big Mac Index (Economist, approx.), World Bank GDP data"
+China,중국,3.63,12951.2,3567.8,"라이스버거, 스파이시치킨",2023,"Big Mac Index (Economist, approx.), World Bank GDP data"
+Indonesia,인도네시아,2.9,4876.3,1681.5,나시고렝 버거,2023,"Big Mac Index (Economist, approx.), World Bank GDP data"
+India,인도,2.75,2434.4,885.3,"맥알루티키, 치킨마하라자맥",2023,"Big Mac Index (Economist, approx.), World Bank GDP data"
