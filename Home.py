@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 
 st.set_page_config(
     page_title="빅맥으로 보는 세계 경제",
@@ -54,18 +55,11 @@ with col2:
     문제를 풀 때마다 관련 배경지식이 함께 나와요.
     """)
 
-col3, col4 = st.columns(2)
-with col3:
-    st.markdown("""
-    **🤖 AI 문화분석 챗봇**
-    "왜 인도는 소고기를 안 쓸까?" 같은 질문을 자유롭게 물어보세요.
-    Hofstede 문화차원 이론을 바탕으로 AI가 설명해드려요.
-    """)
-with col4:
-    st.markdown("""
-    **📈 종합 인사이트**
-    8개국 데이터를 요약한 표와 추가 분석을 확인할 수 있어요.
-    """)
+st.markdown("""
+**🤖 AI 문화분석 챗봇**
+"왜 인도는 소고기를 안 쓸까?" 같은 질문을 자유롭게 물어보세요.
+Hofstede 문화차원 이론을 바탕으로 AI가 설명해드려요.
+""")
 
 st.divider()
 
@@ -76,6 +70,49 @@ col1, col2, col3 = st.columns(3)
 col1.metric("비교 국가 수", "8개국")
 col2.metric("기준 연도", "2023~2024년")
 col3.metric("활용 데이터", "World Bank GDP · Big Mac Index")
+
+st.divider()
+
+# ────────────────────────────────────────────
+# 📈 종합 인사이트: 국가별 요약 테이블
+# ────────────────────────────────────────────
+st.subheader("📈 종합 인사이트: 8개국 한눈에 비교하기")
+st.caption("페이지를 넘기기 전에, 전체 데이터를 표로 먼저 훑어보세요")
+
+@st.cache_data
+def load_data():
+    return pd.read_csv("bigmac_country_comparison.csv")
+
+df = load_data()
+st.session_state["bigmac_df"] = df
+
+display_df = df[[
+    "country_kr", "bigmac_price_usd", "gdp_per_capita_usd",
+    "bigmac_affordability_index", "signature_menu"
+]].rename(columns={
+    "country_kr": "국가",
+    "bigmac_price_usd": "빅맥 가격(USD)",
+    "gdp_per_capita_usd": "1인당 GDP(USD)",
+    "bigmac_affordability_index": "구매력 지수",
+    "signature_menu": "대표 로컬 메뉴",
+}).sort_values("구매력 지수", ascending=False)
+
+st.dataframe(
+    display_df,
+    use_container_width=True,
+    hide_index=True,
+    column_config={
+        "빅맥 가격(USD)": st.column_config.NumberColumn(format="$%.2f"),
+        "1인당 GDP(USD)": st.column_config.NumberColumn(format="$%,.0f"),
+        "구매력 지수": st.column_config.NumberColumn(format="%,.0f"),
+    },
+)
+
+col1, col2 = st.columns(2)
+with col1:
+    st.success(f"💰 구매력 지수가 가장 높은 나라는 **{display_df.iloc[0]['국가']}**예요")
+with col2:
+    st.error(f"💸 구매력 지수가 가장 낮은 나라는 **{display_df.iloc[-1]['국가']}**예요")
 
 st.divider()
 
