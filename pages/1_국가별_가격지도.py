@@ -2,22 +2,33 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# ────────────────────────────────────────────
-# 페이지 기본 설정
-# ────────────────────────────────────────────
-st.set_page_config(page_title="국가별 가격 지도", layout="wide")
+st.set_page_config(page_title="국가별 가격지도", layout="wide")
 st.title("🗺️ 국가별 빅맥 가격 & 구매력 지도")
 st.caption("나라마다 빅맥 가격이 다른 이유, 지도로 한눈에 확인해보세요")
 
-# ────────────────────────────────────────────
-# 데이터 불러오기 (세션에 저장해서 다른 페이지에서도 재사용)
-# ────────────────────────────────────────────
-@st.cache_data
-def load_data():
-    return pd.read_csv("bigmac_country_comparison.csv")
+if "bigmac_df" not in st.session_state:
+    st.warning("먼저 'Home' 페이지를 방문해서 데이터를 불러와주세요.")
+    st.stop()
 
-df = load_data()
-st.session_state["bigmac_df"] = df
+df = st.session_state["bigmac_df"]
+
+# ────────────────────────────────────────────
+# 대표 메뉴 이미지 매핑
+# 실제 위키미디어 커먼��� 등 공개 이미지가 있는 나라는 URL을 연결하고,
+# 이미지를 아직 못 찾은 나라는 기본 버거 이미지로 대체해요
+# ────────────────────────────────────────────
+MENU_IMAGE_MAP = {
+    "United States": "https://commons.wikimedia.org/wiki/Special:FilePath/Big_Mac_hamburger.jpg",
+    "India": "https://commons.wikimedia.org/wiki/Special:FilePath/McAloo_Tikki_Burger.jpg",
+    "South Korea": "https://commons.wikimedia.org/wiki/Special:FilePath/Mcdonalds_seoul.JPG",
+    "Japan": "https://commons.wikimedia.org/wiki/Special:FilePath/Teriyaki_McBurger.jpg",
+    "France": "https://commons.wikimedia.org/wiki/Special:FilePath/Le_Big_Mac.jpg",
+}
+
+DEFAULT_MENU_IMAGE = "https://commons.wikimedia.org/wiki/Special:FilePath/Big_Mac_hamburger.jpg"
+
+def get_menu_image(country):
+    return MENU_IMAGE_MAP.get(country, DEFAULT_MENU_IMAGE)
 
 # ────────────────────────────────────────────
 # 지도 1: 빅맥 가격 choropleth
@@ -73,20 +84,26 @@ fig_afford.update_layout(
 st.plotly_chart(fig_afford, use_container_width=True)
 
 # ────────────────────────────────────────────
-# 국가 선택 → 상세 정보 카드
+# 국가 선택 → 상세 정보 카드 (+ 메뉴 이미지)
 # ────────────────────────────────────────────
 st.divider()
 st.subheader("🔍 국가별 상세 정보")
 
-selected = st.selectbox("국가를 선택하세요", df["country_kr"].tolist())
+selected = st.selectbox("국가를 선택하세요", df["country_kr"].dropna().tolist())
 row = df[df["country_kr"] == selected].iloc[0]
 
-col1, col2, col3 = st.columns(3)
-col1.metric("빅맥 가격", f"${row['bigmac_price_usd']}")
-col2.metric("1인당 GDP", f"${row['gdp_per_capita_usd']:,.0f}")
-col3.metric("구매력 지수", f"{row['bigmac_affordability_index']:,.0f}")
+detail_col1, detail_col2 = st.columns([1, 2])
 
-st.info(f"🍔 **대표 로컬 메뉴:** {row['signature_menu']}")
+with detail_col1:
+    st.image(get_menu_image(row["country"]), use_container_width=True, caption=row["signature_menu"])
+
+with detail_col2:
+    st.markdown(f"### {row['flag']} {row['country_kr']}")
+    col1, col2, col3 = st.columns(3)
+    col1.metric("빅맥 가격", f"${row['bigmac_price_usd']}")
+    col2.metric("1인당 GDP", f"${row['gdp_per_capita_usd']:,.0f}")
+    col3.metric("구매력 지수", f"{row['bigmac_affordability_index']:,.0f}")
+    st.info(f"🍔 **대표 로컬 메뉴:** {row['signature_menu']}")
 
 # ────────────────────────────────────────────
 # 구매력 순위 막대그래프
