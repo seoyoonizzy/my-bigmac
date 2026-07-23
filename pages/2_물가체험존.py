@@ -12,7 +12,7 @@ if "bigmac_df" not in st.session_state:
 
 df = st.session_state["bigmac_df"]
 
-tab1, tab2, tab3 = st.tabs(["🧩 문화 충돌 퀴즈", "⏱️ 내 월급으로 빅맥 사기", "🛒 이 돈이면 뭘 살까?"])
+tab1, tab2, tab3 = st.tabs(["🧩 빅맥 퀴즈", "⏱️ 내 월급으로 빅맥 사기", "🛒 이 돈이면 뭘 살까?"])
 
 # ════════════════════════════════════════════
 # 탭 1: 문화 충돌 퀴즈
